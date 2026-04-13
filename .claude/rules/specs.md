@@ -1,13 +1,13 @@
 ---
 paths:
-  - projects/**
+  - specs/**
+  - plans/**
 ---
 
 # 任务管理规则
 
-- 每个任务一个文件，包含 Spec / Plan / Log / Result 四个部分
-- 任务文件放在 `projects/{项目名}/active/`
-- 完成后移到 `projects/{项目名}/archive/`
-- Spec 必须包含：目标、原因、范围、非目标、验收标准
-- Plan 在 spec 确认后填写，包含：影响文件、步骤、测试策略、风险
-- Result 完成后 promote 关键结论到 wiki
+- 每个任务一个 spec 文件，放在 `specs/active/`，命名：`YYYY-MM-DD-任务名.md`
+- spec 必须包含：目标、原因、范围、非目标、验收标准
+- plan 在 spec 确认后创建，放在 `plans/`，包含：影响文件、实现步骤、测试策略、风险
+- 任务完成后 spec 移到 `specs/archive/`，plan 标注完成状态
+- 实现完成后，有价值的跨项目结论用 `/promote` 回流 Hub

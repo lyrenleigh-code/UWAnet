@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> **Hub**: `D:\Claude\Ohmybrain` — 跨项目知识中心（查询领域知识/回流结论用 `/promote-answer`）
+> **Hub**: `D:\Claude\Ohmybrain` — 跨项目知识中心（查询领域知识/回流结论用 `/promote`）
 > **模板**: `D:\Claude\ohmybrain-core` — 项目模板源
 
 ## 项目名称
@@ -50,7 +50,7 @@ raw/ → ingest → wiki/ → query → promote → wiki/
 ### 开发闭环
 
 ```
-spec → plan → implement → test → validate → archive
+01-spec → 02-plan → 03-implement(产出三件套) → 04-validate(验证+同步+归档+commit)
 ```
 
 ## 自动化保障（Hooks）
@@ -66,15 +66,15 @@ spec → plan → implement → test → validate → archive
 
 | 命令 | 用途 |
 |------|------|
+| `/ingest` | 摄入 raw/ 资料到 wiki/（7 步流程） |
+| `/promote` | 回流跨项目结论到 Hub（5 步流程） |
 | `python scripts/lint_wiki.py` | Wiki 结构检查 |
 | `python scripts/sync_index.py` | 同步 index 页面计数 |
 | `python scripts/validate_task.py` | 任务完成验证 |
 | `python scripts/scrape.py <URL>` | Firecrawl 网页抓取到 raw/ |
 | `python scripts/transcribe.py <文件>` | Whisper 音视频转录到 raw/ |
 
-## 完成标准
+## 项目内导航
 
-- 代码变更已完成
-- 相关测试通过
-- wiki 已同步更新（如需要）
-- 最终回复明确说明了变更内容
+- **仪表盘**: `wiki/dashboard.md`
+- **调研笔记**: `wiki/source-summaries/uwanet-brainstorm.md`
