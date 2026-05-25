@@ -38,12 +38,12 @@
 
 ---
 
-## 当前状态（2026-04-26）
+## 当前状态（2026-05-25）
 
 | 阶段 | 状态 | 说明 |
 |------|------|------|
 | Phase 0 — 调研笔记摄入 | 🟢 完成 | `raw/notes/` 落地 + Hub `uwanet-protocol-sim-note` 摘要 |
-| Phase 1 — Aqua-Sim-NG 环境搭建 | 🔴 未开始 | 1 月学习路线规划中 |
+| Phase 1 — Aqua-Sim-NG 环境搭建 | 🟡 进行中 | **M0 规划文档 + M1 装机三件套已 push**（同步 dry-run worktree，commit `198e155`） |
 | Phase 2 — Slotted ALOHA 5 节点 baseline | 🔴 未开始 | 首个 demo 案例 |
 | Phase 3 — UWAcomm PHY 接入 | 🔴 未开始 | C++/MATLAB 桥接方案待定 |
 | Phase 4 — 多协议对比评测 | 🔴 未开始 | T-Lohi / DBR 等 |
