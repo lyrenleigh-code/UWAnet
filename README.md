@@ -52,6 +52,116 @@
 
 ---
 
+## 调用关系图（规划中 / 占位）
+
+> ⚠️ **占位章节**：项目当前在 Phase 0-1 调研，尚无 ns-3 模块代码可画**实际**调用关系。本图反映**规划中**的 Aqua-Sim-NG 骨架 + UWAcomm PHY 接入点。Phase 2-3 代码落地后填实。
+>
+> 渲染：GitHub / GitLab / Obsidian 直接显示 Mermaid。
+
+```mermaid
+graph LR
+    subgraph "用户入口（Phase 2+）"
+        SCEN[场景脚本<br/>XML / Python]:::entry
+    end
+
+    subgraph "Aqua-Sim-NG 模块（Phase 1 装机后）"
+        APP[Application Layer]
+        TRANS[Transport]
+        NET[Network / Routing<br/>VBF / DBR]
+        MAC[MAC Layer<br/>Slotted ALOHA / T-Lohi]
+        PHY[PHY Layer]
+    end
+
+    subgraph "桥接 UWAcomm（Phase 3 TODO）"
+        BRIDGE[file-driven / TCP socket]:::todo
+        UC_OFDM[UWAcomm OFDM]:::todo
+        UC_DSSS[UWAcomm DSSS]:::todo
+        UC_FSK[UWAcomm FH-MFSK]:::todo
+    end
+
+    subgraph "信道（ns-3 内置）"
+        CH[水声信道<br/>多径 + 时变 + 长延迟]
+    end
+
+    subgraph "分析（Phase 2+）"
+        TRACE[trace 解析<br/>Python]
+        PLOT[可视化<br/>matplotlib]
+    end
+
+    SCEN --> APP
+    APP --> TRANS
+    TRANS --> NET
+    NET --> MAC
+    MAC --> PHY
+    PHY -.桥接 TODO.-> BRIDGE
+    BRIDGE -.-> UC_OFDM & UC_DSSS & UC_FSK
+    PHY --> CH
+    CH --> PHY
+
+    APP -.trace 输出.-> TRACE
+    NET -.trace 输出.-> TRACE
+    MAC -.trace 输出.-> TRACE
+    TRACE --> PLOT
+
+    classDef entry fill:#f9c,stroke:#333,stroke-width:2px
+    classDef todo fill:#ddd,stroke:#999,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+**TODO 项**（虚线 + 灰色节点 = Phase 3 待实现）：
+- `BRIDGE` UWAcomm 桥接：file-driven trace（首选）或 TCP socket，方案待定
+- `UC_OFDM / UC_DSSS / UC_FSK`：UWAcomm 物理层算法接入，C++/MATLAB 互操作
+
+## 数据流图（规划中 / 占位）
+
+> ⚠️ **占位章节**：反映**规划中**的协议栈数据流。Phase 3 PHY 接入后填实接口契约。
+
+```mermaid
+graph LR
+    APP_IN[应用层负载<br/>bytes] --> NET_PKT[NetworkPacket<br/>+ src/dst]
+    NET_PKT --> MAC_FRAME[MAC Frame<br/>+ slot/timing]
+    MAC_FRAME --> PHY_BITS[PHY bits<br/>+ modulation]
+    PHY_BITS -.桥接 TODO.-> UWAcomm_IN[UWAcomm PHY<br/>OFDM/DSSS/FSK]
+    UWAcomm_IN -.-> WAV[waveform<br/>passband samples]
+    WAV --> CH_OUT[ns-3 水声信道]
+    CH_OUT --> WAV_RX[接收 waveform]
+    WAV_RX -.-> UWAcomm_OUT[UWAcomm 解调]
+    UWAcomm_OUT -.-> PHY_RX[PHY bits 恢复]
+    PHY_RX --> MAC_RX
+    MAC_RX --> NET_RX
+    NET_RX --> APP_OUT[应用层接收]
+
+    TRACE_OUT[trace 输出<br/>各层]:::todo
+    APP_IN -.trace.-> TRACE_OUT
+    MAC_FRAME -.trace.-> TRACE_OUT
+    APP_OUT -.trace.-> TRACE_OUT
+
+    style APP_IN fill:#bbf
+    style APP_OUT fill:#bfb
+    style CH_OUT fill:#fbb
+    classDef todo fill:#ddd,stroke:#999,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+## 接口表（规划中 / 占位）
+
+> ⚠️ **占位章节**：Phase 1 装机后填 Aqua-Sim-NG 内置接口；Phase 3 桥接接入 UWAcomm 后补 PHY 桥接接口。
+
+| # | 接口 | 输入 | 输出 | 状态 |
+|---|---|---|---|---|
+| 1 | Aqua-Sim-NG MAC layer API | `Packet` + `slot/timing` | `enqueue / dequeue` | 🔴 Phase 1 装机后填 |
+| 2 | Aqua-Sim-NG PHY layer API | PHY bits + `modulation_type` | waveform → ns-3 channel | 🔴 Phase 1 装机后填 |
+| 3 | UWAcomm 桥接（file-driven）| bits + `scheme`（'OFDM'/'DSSS'/'FSK'）| wav 文件 → trace | 🔴 Phase 3 待定 |
+| 4 | UWAcomm 桥接（TCP socket，备选）| bits + `scheme` | 实时 IQ stream | 🔴 Phase 3 待定 |
+| 5 | trace 解析 API（Python）| ns-3 `.tr` 文件 | DataFrame + 协议指标 | 🔴 Phase 2 后做 |
+
+**TODO（待 Phase 2-3 填实）**：
+- Phase 2 Slotted ALOHA 5 节点 baseline 落地后，本表 #1-#2 补实际函数签名
+- Phase 3 UWAcomm 桥接落地后，本表 #3-#4 二选一并补具体协议（trace 文件格式 / TCP 协议）
+- Phase 2+ 分析脚本落地后，#5 补 Python 解析函数签名
+
+> 模块级详细接口表（参数维度/物理含义/实测样例）参照范例：`D:/Claude/worktrees/UWAcomm_usbl-calibration/src/calibration/W1/README.md` § 6.1（engineering 类首个完整范例，UWAnet 代码落地后照此粒度填实）
+
+---
+
 ## 技术栈
 
 | 层 | 选型 | 理由 |
